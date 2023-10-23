@@ -135,8 +135,6 @@ public class Solution {
             if (drivers.isEmpty())
                 throw new IllegalStateException("No drivers available!");
 
-            LOGGER.log(Level.INFO, "service.Solution found for current problem");
-
             return drivers;
 
         }catch(IllegalStateException e){
@@ -159,11 +157,10 @@ public class Solution {
             List<Load> loads = driver.getLoads();
             List<Integer> loadNumbers = new ArrayList<>();
             loads.forEach(load -> loadNumbers.add(load.getLoadNumber()));
-            System.out.println("The load for Driver "+ (i+1) +" is:" + loadNumbers);
+            System.out.println(loadNumbers);
             // Calculate the correct total cost for each driver
             totalCost += helper.getTotalDistance(loads) + Constants.COST_OF_DRIVER;
         }
-        System.out.println(totalCost);
     }
 
 }
