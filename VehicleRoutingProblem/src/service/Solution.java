@@ -146,7 +146,7 @@ public class Solution {
     }
 
     /**
-     * Prints the results of the load distribution, including the loads assigned to each driver and the total cost.
+     * Prints the results of the load distribution, including the loads assigned to each driver.
      *
      * @param drivers The list of drivers with their assigned loads.
      */
