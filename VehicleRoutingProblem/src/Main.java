@@ -37,6 +37,7 @@ public class Main {
 
         String filePath = args[0];
 
+
         try {
             double[][][] testData = DataReader.readFile(filePath);
             Solution s = new Solution(testData);

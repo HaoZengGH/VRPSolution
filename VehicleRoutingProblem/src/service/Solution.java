@@ -57,10 +57,8 @@ public class Solution {
         for (int i = 0; i < drivers.size(); i++) {
             if (drivers.get(i).getWorkingTime() > Constants.MAX_WORKING_TIME)
                 continue;
-            for (Load load : drivers.get(i).getLoads()) {
-                visitedDropOffLocations.add(load.getDropOffLocation());
-            }
-            double[] nearestDropOffLocation = helper.getNearestNeighbor(curPickUpLocation, visitedDropOffLocations.toArray(new double[visitedDropOffLocations.size()][]));
+            List<Load> loadsForDriver=drivers.get(i).getLoads();
+            double[] visitedDropOffLocation=loadsForDriver.get(loadsForDriver.size()-1).getDropOffLocation();
 
             // Minimum possible cost for an existing driver: distance(nearestDropOffLocation, curPickUpLocation) + distance(DEPOT_LOCATION, curPickUpLocation)
             // Minimum possible cost for adding a new driver:  distance(DEPOT_LOCATION, curPickUpLocation) + distance(DEPOT_LOCATION, curPickUpLocation) + cost of driver
@@ -70,16 +68,18 @@ public class Solution {
 
             // Calculate the 3 types of distances mentioned above:
             double depotToCurPickup = helper.getEuclideanDistance(Constants.DEPOT_LOCATION, curPickUpLocation);
-            double nearestDropOffToCurPickup= helper.getEuclideanDistance(nearestDropOffLocation, curPickUpLocation);
+            double lastDropOffToCurPickup= helper.getEuclideanDistance(visitedDropOffLocation, curPickUpLocation);
             double curPickupToCurDropoff = helper.getEuclideanDistance(curPickUpLocation,curDropOffLocation);
+            double curDropOffToDepot = helper.getEuclideanDistance(curDropOffLocation,Constants.DEPOT_LOCATION);
 
             // If an existing driver could be used
-            if (nearestDropOffToCurPickup < Constants.COST_OF_DRIVER + depotToCurPickup) {
-                double curCost = nearestDropOffToCurPickup + curPickupToCurDropoff;
+            if (lastDropOffToCurPickup < Constants.COST_OF_DRIVER + depotToCurPickup) {
+                double curCost = lastDropOffToCurPickup + curPickupToCurDropoff;
 
-                // Iterate the drivers to find an existing driver who has enough working hour and would cost the minimum
-                if ( nearestDropOffToCurPickup < minCost
-                        && drivers.get(i).getWorkingTime() + curCost + depotToCurPickup < Constants.MAX_WORKING_TIME) {
+                // Iterate the drivers to find an existing driver who has enough working hour to drive to the location and come back to depot
+                // and would cost the minimum
+                if ( lastDropOffToCurPickup < minCost
+                        && drivers.get(i).getWorkingTime() + curCost + curDropOffToDepot < Constants.MAX_WORKING_TIME) {
                     existingDriver = i;
                     minCost=curCost;
                 }
@@ -159,7 +159,9 @@ public class Solution {
             loads.forEach(load -> loadNumbers.add(load.getLoadNumber()));
             System.out.println(loadNumbers);
             // Calculate the correct total cost for each driver
-            totalCost += helper.getTotalDistance(loads) + Constants.COST_OF_DRIVER;
+            if(helper.getTotalDistance(loads)>720)
+                LOGGER.log(Level.SEVERE, "The current driver's working hour exceeds 12 hours ");
+            totalCost+=helper.getTotalDistance(loads)+Constants.COST_OF_DRIVER;
         }
     }
 

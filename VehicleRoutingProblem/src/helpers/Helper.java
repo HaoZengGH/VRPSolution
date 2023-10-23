@@ -36,9 +36,9 @@ public class Helper {
         for (int i = 0; i < loads.size() - 1; i++) {
             double[][] prevLoad = new double[][]{loads.get(i).getPickUpLocation(),loads.get(i).getDropOffLocation()};
             double[][] nextLoad = new double[][]{loads.get(i+1).getPickUpLocation(),loads.get(i+1).getDropOffLocation()};
-            totalDistance += getEuclideanDistance(prevLoad[1], nextLoad[0]);
+            totalDistance += getEuclideanDistance(prevLoad[0],prevLoad[1])+getEuclideanDistance(prevLoad[1], nextLoad[0]);
         }
-        return totalDistance;
+        return totalDistance + getEuclideanDistance(loads.get(loads.size() - 1).getPickUpLocation(), lastDropOff);
     }
 
     /**
